@@ -2,10 +2,14 @@
 
 namespace App\Domains\Products\Models;
 
+use Database\Factories\ProductFactory;
 use App\Support\Domains\SearchableModel;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends SearchableModel
 {
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -38,5 +42,15 @@ class Product extends SearchableModel
     public function stockMovements()
     {
         return $this->hasMany(StockMovement::class, 'product_id');
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    protected static function newFactory()
+    {
+        return ProductFactory::new();
     }
 }
