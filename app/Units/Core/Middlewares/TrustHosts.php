@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Units\Core\Middlewares;
 
 use Illuminate\Http\Middleware\TrustHosts as Middleware;
 

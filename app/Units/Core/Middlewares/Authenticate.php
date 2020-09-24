@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Units\Core\Middlewares;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 
@@ -17,5 +17,7 @@ class Authenticate extends Middleware
         if (! $request->expectsJson()) {
             return route('login');
         }
+
+        return null;
     }
 }

@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Exceptions;
+namespace App\Units\Core;
 
 use Throwable;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Exceptions\PostTooLargeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Http\Exceptions\MaintenanceModeException;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
-class Handler extends ExceptionHandler
+class ExceptionHandler extends Handler
 {
     /**
      * A list of the exception types that are not reported.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace App\Units\Core\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Support\Domains\Search\SimpleSearch;
