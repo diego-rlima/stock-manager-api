@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Units\Product\Routes;
+namespace App\Units\Products\Routes;
 
 use App\Support\Http\Route;
-use App\Units\Product\Controllers\ProductController;
+use App\Units\Products\Controllers\ProductController;
 
 class Api extends Route
 {

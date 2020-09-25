@@ -5,7 +5,7 @@ namespace App\Units\Core\Providers;
 use Illuminate\Http\Request;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
-use App\Units\Product\Routes\Api as ProductRoutes;
+use App\Units\Products\Routes\Api as ProductRoutes;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
