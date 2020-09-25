@@ -4,10 +4,12 @@ namespace App\Units\Core\Providers;
 
 use App\Domains\Products\Product;
 use App\Support\Domains\Search\Search;
+use App\Domains\Products\StockMovement;
 use Illuminate\Support\ServiceProvider;
 use App\Support\Domains\Search\SimpleSearch;
 use App\Support\Domains\Search\AdvancedSearch;
 use App\Domains\Products\Contacts\ProductContract;
+use App\Domains\Products\Contacts\StockMovementContract;
 use App\Support\Domains\Search\Contracts\SearchContract;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +31,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ProductContract::class,
             Product::class
+        );
+
+        $this->app->bind(
+            StockMovementContract::class,
+            StockMovement::class
         );
     }
 
