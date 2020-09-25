@@ -2,7 +2,7 @@
 
 namespace App\Support\Domains\Search\Traits;
 
-use App\Support\Domains\Search\Search;
+use App\Support\Domains\Search\Contracts\SearchContract;
 
 /**
  * Trait Searchable
@@ -27,7 +27,7 @@ trait Searchable
         bool $advanced = false,
         callable $callback = null
     ) {
-        $search = resolve(Search::class);
+        $search = resolve(SearchContract::class);
 
         $search->getSimple()->setTerm($value);
         $search->getSimple()->setColumns($this->searchable());

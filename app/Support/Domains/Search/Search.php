@@ -37,20 +37,6 @@ class Search implements SearchContract
     protected array $mutators = [];
 
     /**
-     * Search constructor.
-     *
-     * @param  \App\Support\Domains\Search\Contracts\SimpleSearchContract    $simple
-     * @param  \App\Support\Domains\Search\Contracts\AdvancedSearchContract  $advanced
-     */
-    public function __construct(
-        SimpleSearchContract $simple,
-        AdvancedSearchContract $advanced
-    ) {
-        $this->setSimple($simple);
-        $this->setAdvanced($advanced);
-    }
-
-    /**
      * Add a mutator to list.
      *
      * @param  string    $column
