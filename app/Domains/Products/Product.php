@@ -59,15 +59,18 @@ class Product implements ProductContract
      * @param  mixed        $query
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function listProducts(int $limit, string $searchTerm = null, $query = null): Collection
-    {
+    public function listProducts(
+        int $limit,
+        string $searchTerm = null,
+        $query = null
+    ): Collection {
         $query = $this->parseQuery($query);
 
         if ($limit > 0) {
             $query->take($limit);
         }
 
-        return $query->get();
+        return $query->search($searchTerm, true)->get();
     }
 
     /**
@@ -78,8 +81,11 @@ class Product implements ProductContract
      * @param  mixed        $query
      * @return \Illuminate\Pagination\AbstractPaginator
      */
-    public function paginateProducts(int $limit, string $searchTerm = null, $query = null): AbstractPaginator
-    {
+    public function paginateProducts(
+        int $limit,
+        string $searchTerm = null,
+        $query = null
+    ): AbstractPaginator {
         $query = $this->parseQuery($query);
 
         return $query->search($searchTerm, true)->paginate($limit);
