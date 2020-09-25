@@ -9,14 +9,14 @@ class ApiController extends Controller
      *
      * @var \App\Support\Http\Response
      */
-    protected $response;
+    protected Response $response;
 
     /**
      * API parameters helper.
      *
      * @var \App\Support\Http\Parameters
      */
-    protected $parameters;
+    protected Parameters $parameters;
 
     /**
      * Creates a new class instance.
