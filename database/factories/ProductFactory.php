@@ -23,10 +23,10 @@ class ProductFactory extends Factory
     {
         return [
             'title' => $this->faker->word,
-            'sku' => $this->faker->unique()->optional()->randomNumber(),
+            'sku' => $this->faker->unique()->optional()->randomNumber(3),
             'description' => $this->faker->optional()->paragraphs(3, true),
-            'price' => $this->faker->randomFloat(),
-            'promotional_price' => $this->faker->optional()->randomFloat(),
+            'price' => $this->faker->randomFloat(2, 500, 800),
+            'promotional_price' => $this->faker->optional()->randomFloat(2, 400, 500),
             'in_stock' => $this->faker->numberBetween(0, 100),
         ];
     }
