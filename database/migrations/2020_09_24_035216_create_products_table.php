@@ -21,6 +21,7 @@ class CreateProductsTable extends Migration
             $table->decimal('price', 9, 2)->nullable();
             $table->decimal('promotional_price', 9, 2)->nullable();
             $table->integer('in_stock')->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

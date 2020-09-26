@@ -4,11 +4,12 @@ namespace App\Domains\Products\Models;
 
 use Database\Factories\ProductFactory;
 use App\Support\Domains\SearchableModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends SearchableModel
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
