@@ -2,12 +2,16 @@
 
 namespace App\Units\Products\Controllers;
 
+use Exception;
 use App\Support\Http\Response;
 use App\Support\Http\Parameters;
 use App\Support\Http\ApiController;
+use App\Units\Products\Resources\ProductResource;
 use App\Units\Products\Resources\StockCollection;
+use App\Units\Products\Requests\UpdateInventoryRequest;
 use App\Domains\Products\Contacts\StockMovementContract;
 use App\Domains\Products\Models\Product as ProductModel;
+use App\Units\Products\Requests\UpdateMultipleInventoriesRequest;
 
 class StockController extends ApiController
 {
@@ -49,5 +53,52 @@ class StockController extends ApiController
         );
 
         return $this->response->collection($products, StockCollection::class);
+    }
+
+    /**
+     * Update the inventory of a product.
+     *
+     * @param  \App\Units\Products\Requests\UpdateInventoryRequest  $request
+     * @param  \App\Domains\Products\Models\Product                 $product
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+     */
+    public function store(UpdateInventoryRequest $request, ProductModel $product)
+    {
+        try {
+            $updated = $this->service->update($product, $request->all());
+        } catch (Exception $exception) {
+            $updated = false;
+        }
+
+        if (!$updated) {
+            return $this->response->withInternalServerError();
+        }
+
+        return $this->response
+            ->withMessage(__('The inventory of this product has been updated.'))
+            ->item($product, ProductResource::class);
+    }
+
+    /**
+     * Update the inventory of multiple products.
+     *
+     * @param  \App\Units\Products\Requests\UpdateMultipleInventoriesRequest  $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Resources\Json\JsonResource
+     */
+    public function storeMany(UpdateMultipleInventoriesRequest $request)
+    {
+        try {
+            $updated = $this->service->updateMany($request->all());
+        } catch (Exception $exception) {
+            $updated = false;
+        }
+
+        if (!$updated) {
+            return $this->response->withInternalServerError();
+        }
+
+        return $this->response
+            ->withMessage(__('The inventory of these products has been updated.'))
+            ->json();
     }
 }

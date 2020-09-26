@@ -18,5 +18,7 @@ class Api extends Route
         $this->router->apiResource('products', ProductController::class);
         $this->router->resource('products.stock', StockController::class)
             ->only(['index', 'store']);
+        $this->router->post('/products/stock', [StockController::class, 'storeMany'])
+            ->name('products.stock.multiple');
     }
 }
