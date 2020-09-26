@@ -22,7 +22,8 @@ class StockMovementFactory extends Factory
     public function definition()
     {
         return [
-            'qty' => $this->faker->numberBetween(-50, 100),
+            'qty' => $this->faker->numberBetween(1, 100),
+            'type' => $this->faker->randomElement(['increase', 'decrease']),
             'description' => $this->faker->sentence,
         ];
     }

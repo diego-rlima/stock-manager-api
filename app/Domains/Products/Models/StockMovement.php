@@ -19,7 +19,11 @@ class StockMovement extends SearchableModel
      *
      * @var array
      */
-    protected $fillable = ['qty'];
+    protected $fillable = [
+        'qty',
+        'description',
+        'type',
+    ];
 
     /**
      * The attributes that are searchable.

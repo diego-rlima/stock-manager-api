@@ -16,7 +16,8 @@ class CreateStockMovementsTable extends Migration
         Schema::create('stock_movements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->onDelete('cascade');
-            $table->integer('qty');
+            $table->char('type', 8)->default('increase');
+            $table->unsignedInteger('qty');
             $table->string('description');
             $table->timestamps();
         });
