@@ -18,6 +18,7 @@ class ProductResource extends BaseResource
             'id' => $this->id,
             'title' => $this->title,
             'sku' => $this->sku,
+            'in_stock' => (int) $this->in_stock,
             'price' => $this->price,
             'promotional_price' => $this->promotional_price,
             'description' => $this->description,

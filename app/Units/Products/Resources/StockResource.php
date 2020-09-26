@@ -15,6 +15,7 @@ class StockResource extends BaseResource
     public function toArray($request)
     {
         return [
+            'type' => $this->type,
             'qty' => $this->qty,
             'description' => $this->description,
             'created_at' => $this->created_at->toDateTimeString(),
