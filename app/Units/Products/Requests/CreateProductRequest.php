@@ -12,7 +12,7 @@ class CreateProductRequest extends UpdateProductRequest
     public function rules()
     {
         return parent::rules() + [
-            'qty' => 'nullable|integer|min:-50000|max:50000'
+            'qty' => 'nullable|integer|min:1|max:50000',
         ];
     }
 }
