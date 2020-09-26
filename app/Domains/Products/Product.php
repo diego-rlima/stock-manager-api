@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\AbstractPaginator;
 use App\Domains\Products\Contacts\ProductContract;
 use App\Domains\Products\Models\Product as ProductModel;
+use App\Domains\Products\Contacts\StockMovementContract;
 
 class Product implements ProductContract
 {
@@ -121,7 +122,10 @@ class Product implements ProductContract
         );
 
         if ($product) {
-            // TODO: Add the first stock entry.
+            resolve(StockMovementContract::class)->update($product, [
+                'description' => 'Product creation',
+                'qty' => abs($data['qty'] ?? 1),
+            ]);
         }
 
         return $product;

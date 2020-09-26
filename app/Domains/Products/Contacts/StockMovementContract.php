@@ -49,20 +49,19 @@ interface StockMovementContract extends ServiceContract
     /**
      * Update the stock of multiple products at once.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $data
+     * @param  array  $data
      * @return bool
      */
-    public function updateMany(Collection $data): bool;
+    public function updateMany(array $data): bool;
 
     /**
      * Update the stock of a product.
      *
      * @param  \App\Domains\Products\Models\Product  $product
-     * @param  string                                $type
-     * @param  int                                   $qty
+     * @param  array                                 $data
      * @return bool
      */
-    public function update(Product $product, string $type, int $qty): bool;
+    public function update(Product $product, array $data): bool;
 
     /**
      * Get the StockMovement model.

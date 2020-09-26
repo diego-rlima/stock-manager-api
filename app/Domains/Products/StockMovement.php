@@ -2,9 +2,11 @@
 
 namespace App\Domains\Products;
 
-use App\Domains\Products\Models\Product;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\AbstractPaginator;
+use App\Domains\Products\Contacts\ProductContract;
+use App\Domains\Products\Models\Product as ProductModel;
 use App\Domains\Products\Contacts\StockMovementContract;
 use App\Domains\Products\Models\StockMovement as MovementModel;
 
@@ -16,9 +18,17 @@ class StockMovement implements StockMovementContract
      * @param  \App\Domains\Products\Models\Product  $product
      * @return int
      */
-    public function getAvailable(Product $product): int
+    public function getAvailable(ProductModel $product): int
     {
-        return $product->stockMovements()->sum('qty');
+        return $product->stockMovements()
+            ->get(['qty', 'type'])
+            ->reduce(function ($sum, $item) {
+                $qty = $item['type'] == 'increase'
+                    ? $item['qty']
+                    : $item['qty'] * (-1);
+
+                return $sum + $qty;
+            }, 0);
     }
 
     /**
@@ -30,7 +40,7 @@ class StockMovement implements StockMovementContract
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function listMovementHistoric(
-        Product $product,
+        ProductModel $product,
         int $limit,
         $query = null
     ): Collection {
@@ -52,7 +62,7 @@ class StockMovement implements StockMovementContract
      * @return \Illuminate\Pagination\AbstractPaginator
      */
     public function paginateMovementHistoric(
-        Product $product,
+        ProductModel $product,
         int $limit,
         $query = null
     ): AbstractPaginator {
@@ -64,27 +74,151 @@ class StockMovement implements StockMovementContract
     /**
      * Update the stock of multiple products at once.
      *
-     * @param  \Illuminate\Database\Eloquent\Collection  $data
+     * @param  array  $data
      * @return bool
+     * @throws \Throwable
      */
-    public function updateMany(Collection $data): bool
+    public function updateMany(array $data): bool
     {
-        // TODO: Implement updateMany() method.
-        return false;
+        $type = $data['type'] ?? null;
+        $description = $data['description'] ?? null;
+        $products = collect($data['products'] ?? []);
+        $loadedProducts = $this->loadProductsToUpdate($data['products'] ?? []);
+
+        $updated = $products->map(function (array $data) use (
+            $loadedProducts,
+            $type,
+            $description
+        ) {
+            $product = $loadedProducts->firstWhere('id', $data['id']);
+
+            if (!$product) {
+                return false;
+            }
+
+            return $this->simpleUpdate($product, [
+                'qty' => $data['qty'],
+                'type' => $type,
+                'description' => $description,
+            ]);
+        });
+
+        if ($updated->filter()->count() != $products->count()) {
+            DB::rollBack();
+            return false;
+        }
+
+        DB::commit();
+
+        return true;
     }
 
     /**
      * Update the stock of a product.
      *
      * @param  \App\Domains\Products\Models\Product  $product
-     * @param  string                                $type
-     * @param  int                                   $qty
+     * @param  array                                 $data
+     * @return bool
+     * @throws \Throwable
+     */
+    public function update(ProductModel $product, array $data): bool
+    {
+        DB::beginTransaction();
+
+        $updated = $this->simpleUpdate($product, $data);
+
+        if (!$updated) {
+            DB::rollBack();
+            return false;
+        }
+
+        DB::commit();
+
+        return true;
+    }
+
+    /**
+     * Update the stock of a product.
+     *
+     * @param  \App\Domains\Products\Models\Product  $product
+     * @param  array                                 $data
      * @return bool
      */
-    public function update(Product $product, string $type, int $qty): bool
+    protected function simpleUpdate(ProductModel $product, array $data): bool
     {
-        // TODO: Implement update() method.
-        return false;
+        $data = $this->formatData($data);
+        $updated = $this->parseQuery($product)->create($data);
+
+        if ($updated) {
+            $updated = $this->updateProduct(
+                $product,
+                $updated->qty,
+                $updated->type
+            );
+        }
+
+        return (bool) $updated;
+    }
+
+    /**
+     * Load multiple products to update the inventory.
+     *
+     * @param  array  $products
+     * @return false|\Illuminate\Database\Eloquent\Collection
+     */
+    protected function loadProductsToUpdate(array $products)
+    {
+        $productService = resolve(ProductContract::class);
+        $ids = collect($products)->pluck('id')->filter();
+
+        if ($ids->isEmpty()) {
+            return false;
+        }
+
+        return $productService
+            ->listProducts(0, null, function ($query) use ($ids) {
+                $query->whereIn('id', $ids->toArray());
+            });
+    }
+
+    /**
+     * Update the product `in_stock` column.
+     *
+     * @param  \App\Domains\Products\Models\Product  $product
+     * @param  int                                   $qty
+     * @param  string                                $type
+     * @return bool
+     */
+    protected function updateProduct(
+        ProductModel $product,
+        int $qty,
+        string $type
+    ): bool {
+        if ($type == 'decrease') {
+            $qty *= -1;
+        }
+
+        return $product->forceFill([
+            'in_stock' => $product->in_stock + $qty
+        ])
+            ->save();
+    }
+
+    /**
+     * Format the register info.
+     *
+     * @param  array  $data
+     * @return array
+     */
+    protected function formatData(array $data): array
+    {
+        $qty = abs($data['qty'] ?? 1);
+
+        return [
+            'qty' => $qty,
+            'description' => $data['description'] ?? 'Inventory update',
+            'type' => $data['type'] ?? 'increase',
+        ];
     }
 
     /**
@@ -104,7 +238,7 @@ class StockMovement implements StockMovementContract
      * @param  mixed                                 $query
      * @return mixed
      */
-    public function parseQuery(Product $product, $query = null)
+    public function parseQuery(ProductModel $product, $query = null)
     {
         $baseQuery = $product->stockMovements();
 
