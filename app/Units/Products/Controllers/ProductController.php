@@ -2,6 +2,7 @@
 
 namespace App\Units\Products\Controllers;
 
+use Exception;
 use App\Support\Http\Response;
 use App\Support\Http\Parameters;
 use App\Support\Http\ApiController;
@@ -68,7 +69,11 @@ class ProductController extends ApiController
      */
     public function store(CreateProductRequest $request)
     {
-        $product = $this->service->create($request->all());
+        try {
+            $product = $this->service->create($request->all());
+        } catch (Exception $exception) {
+            $product = false;
+        }
 
         if (!$product) {
             return $this->response->withInternalServerError();
